@@ -1,2 +1,2 @@
 # FibonacciPic
-Try to deconstruct pictures (well, good ones) using Fibonacci curve using React.
+Try to deconstruct pictures (well, good ones) through Fibonacci curve using React way.
