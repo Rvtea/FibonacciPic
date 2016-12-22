@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./build/react.js"></script>
+    <script src="./build/react-dom.js"></script>
+    <script src="./build/browser.min.js"></script>
+</head>
+
+<body>
+    <div id="FibPic"></div>
+    <script type="text/babel">
+        var picUpload = React.createClass({
+          getInitialState: () => ({ picUploaded: false }),
+
+          getDefaultProps: () => ({ className: "img-upload"}),
+
+          propTypes: {
+            onChange: React.PropTypes.func.isRequired,
+            className: React.PropTypes.string
+          },
+
+          _onUpload: function(evt) {
+            evt.preventDefault();
+            var tar = evt.target;
+            var files = tar.files;
+            var count = this.props.multiple ? files.length : 1;
+            var i
+            for (i = 0; i < count; i++) {
+              files[i].thumb = URL.createObjectURL(files[i])
+            }
+            // convert to array
+            files = Array.prototype.slice.call(files, 0)
+            files = files.filter(function (file) {
+              return /image/i.test(file.type)
+            })
+            this.setState({
+              picUploaded: true
+            });
+            this.props.onChange(files, event);
+          },
+
+          render: function() {
+            var value = this.state.picUploaded;
+            return (
+              <div>
+                <input type="file" onChange={this._onUpload} />
+                <p>{( (value === true) ? 'Pic upload successful' : 'sorry but upload failed.')}</p>
+              </div>
+            );
+          }
+        });
+
+        var picFib = React.createClass({
+          getInitialState: function() {
+            return {
+              picFile: []
+            }
+          },
+
+          onChange: function(pFiles) {
+            this.setState({
+                picFile: this.state.picFile.concat(pFiles)
+            });
+            console.log("File length: " + this.state.picFile.length);
+          },
+
+          render: function() {
+            return React.createElement(
+              'div',
+              {
+                className: 'upload-box'
+              },
+              React.createElement(picUpload, {
+                onChange: this.onChange
+              }),
+              // Preview render
+              this.state.picFile.length ? React.createElement(
+                'div',
+                {
+                  className: 'thumbs-box'
+                },
+                this.state.picFile.map(function (file, index) {
+                  return React.createElement(
+                    'div', {
+                      key: index
+                    },
+                    React.createElement(
+                      'img', {
+                        src: file.thumb
+                      }
+                    )
+                  )
+                })
+              ) : null
+            )
+          }
+
+        })
+
+        ReactDOM.render(React.createElement(picFib, null), document.querySelector('#FibPic'))
+    </script>
+</body>
+
+</html>
